@@ -21,8 +21,13 @@ export const useUserRoleProvisioningStore = defineStore('userRoleProvisioning', 
 			provisioningConfig.value = config;
 			return config;
 		} catch (error) {
-			console.error('Failed to fetch provisioning config:', error);
-			throw error;
+			const status = (error as any)?.response?.status;
+			if (status === 404 || status === 403) {
+				console.warn('SSO User Role Provisioning is not licensed or enabled.');
+			} else {
+				console.error('Failed to fetch provisioning config:', error);
+			}
+			return;
 		}
 	};
 
